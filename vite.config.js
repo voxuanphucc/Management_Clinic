@@ -1,10 +1,38 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
+
+// Plugin to serve index.html from public folder
+const publicIndexHtmlPlugin = () => ({
+    name: 'public-index-html',
+    configureServer(server) {
+        return () => {
+            server.middlewares.use(async (req, res, next) => {
+                if (req.url === '/' || req.url === '/index.html') {
+                    try {
+                        const htmlPath = path.resolve(__dirname, 'public/index.html');
+                        let html = fs.readFileSync(htmlPath, 'utf-8');
+
+                        // Transform HTML through Vite for HMR and module injection
+                        html = await server.transformIndexHtml(req.url, html);
+
+                        res.setHeader('Content-Type', 'text/html');
+                        res.end(html);
+                        return;
+                    } catch (e) {
+                        return next(e);
+                    }
+                }
+                next();
+            });
+        };
+    },
+});
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react()],
+    plugins: [react(), publicIndexHtmlPlugin()],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
@@ -20,5 +48,10 @@ export default defineConfig({
     },
     server: {
         port: 3000,
+    },
+    build: {
+        rollupOptions: {
+            input: path.resolve(__dirname, 'public/index.html'),
+        },
     },
 });
