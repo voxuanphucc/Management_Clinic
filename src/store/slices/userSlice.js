@@ -29,11 +29,7 @@ const userSlice = createSlice({
     },
 });
 
-export const {
-    fetchUsersStart,
-    fetchUsersSuccess,
-    fetchUsersFailure,
-    setCurrentUser,
-} = userSlice.actions;
+export const { fetchUsersStart, fetchUsersSuccess, fetchUsersFailure, setCurrentUser } =
+    userSlice.actions;
 
 export default userSlice.reducer;

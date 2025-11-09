@@ -50,8 +50,17 @@ export default defineConfig({
         port: 3000,
     },
     build: {
+        sourcemap: true, // Enable source maps for production debugging
         rollupOptions: {
             input: path.resolve(__dirname, 'public/index.html'),
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', 'react-router-dom'],
+                    redux: ['@reduxjs/toolkit', 'react-redux', 'zustand'],
+                    ui: ['react-hot-toast', 'react-loader-spinner'],
+                    forms: ['react-hook-form', 'yup', '@hookform/resolvers'],
+                },
+            },
         },
     },
 });
